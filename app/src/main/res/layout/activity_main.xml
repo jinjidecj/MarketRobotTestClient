@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/activity_main"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".MainActivity">
+
+<Button
+    android:id="@+id/start"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/ipEditText"
+    android:layout_alignParentStart="true"
+    android:layout_marginStart="0dp"
+    android:layout_marginTop="20dp"
+    android:text="开始" />
+
+<TextView
+    android:id="@+id/textView"
+    android:layout_width="375dp"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/start"
+    android:layout_alignStart="@+id/start"
+    android:layout_marginStart="1dp"
+    android:layout_marginTop="27dp"
+    android:text="请点击开始按钮"
+    android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/ipEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="172.16.0.101" />
+
+<TextView
+    android:id="@+id/tvStatus"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/textView"
+    android:layout_marginTop="20dp"
+    android:text="status" />
+
+<Button
+    android:id="@+id/btnStop"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/tvStatus"
+    android:layout_marginTop="31dp"
+    android:text="停止" />
+
+    <Button
+        android:id="@+id/btn_set_success"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnStop"
+        android:layout_marginTop="19dp"
+        android:text="复位成功" />
+
+    <Button
+        android:id="@+id/btn_start_get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_set_success"
+        android:layout_marginTop="15dp"
+        android:text="开始取货" />
+
+    <Button
+        android:id="@+id/btn_success_get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_start_get"
+        android:layout_marginTop="13dp"
+        android:text="成功取货" />
+
+    <Button
+        android:id="@+id/btn_success_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_success_get"
+        android:layout_marginTop="21dp"
+        android:text="成功出货" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="49dp"
+        android:layout_toEndOf="@+id/ipEditText"
+        android:text="打开是2" />
+
+    <Button
+        android:id="@+id/btn_status4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_success_out"
+        android:layout_marginTop="17dp"
+        android:text="状态4" />
+</RelativeLayout>
