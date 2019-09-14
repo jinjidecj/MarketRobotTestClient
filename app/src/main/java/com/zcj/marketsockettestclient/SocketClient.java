@@ -4,10 +4,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 import static java.lang.System.currentTimeMillis;
@@ -23,12 +32,18 @@ public class SocketClient extends Socket {
     private FileInputStream fis;
 
     private DataOutputStream dos;
+    boolean stopFlag = true;
 
     private int i = 0;
     private final int totalRound = 1000000000;//4000*6;
 
     private Handler handler;
-
+    private String BUSINESS_TYPE ="businessType";
+    private String DATA="data";
+    private String ID="ID";
+    private String STATUS="status";
+    private String ERROR_DESC="errorDesc";
+    private String receiveCode = "";
     /**
      * 构造函数<br/>
      * 与服务器建立连接
@@ -60,6 +75,74 @@ public class SocketClient extends Socket {
         msg.what = 1;
         msg.obj="SocketClient: "+"Cliect[port:" + client.getLocalPort() + "] 成功连接服务端";
         handler.sendMessage(msg);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DataInputStream dis;
+                PrintWriter printWriter=null;
+                try {
+                    dis = new DataInputStream(client.getInputStream());
+                    BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream(),"GBK"));
+                    printWriter= new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream(),"GBK")),true);
+                    // 开始接收文件
+                    byte[] bytes = new byte[1024];
+                    while(stopFlag){
+                        String result="";
+                        while (stopFlag&&(result=br.readLine())!=null){
+                            //处理接收到的消息
+                            result= getReadStringExclude(result);
+                            if("".equals(result)){
+                                LogUtil.d("接收数据解析失败。");
+                            }else{
+                                //处理接收到的消息
+                                JSONObject jsonObject = new JSONObject(result);
+                                receiveCode = jsonObject.getString("businessType");
+                            }
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    JSONObject root = new JSONObject();
+                                    JSONObject data = new JSONObject();
+                                    try {
+                                        root.put(BUSINESS_TYPE,"0024");
+                                        data.put("businessTypeGot",receiveCode);
+                                        root.put(DATA,data);
+                                        if(client!=null){
+                                            sendMessage(root.toString());
+                                        }else{
+                                            LogUtil.d("client is null");
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }).start();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    LogUtil.d("receiveString: finally");
+                }
+            }
+        }).start();
+    }
+    private String getWriteString(String content){
+        return "#!"+content+"&"/*+"\r"*/;
+    }
+    private String getReadStringExclude(String content){
+        int startIndex = content.indexOf("#!");
+        int endIndex = content.indexOf("&");
+        if(startIndex<0 || endIndex<0){
+            return "";
+        }
+        if(startIndex>endIndex){
+            return "";
+        }
+        LogUtil.d(content.substring(startIndex+2,endIndex));
+        return content.substring(startIndex+2,endIndex);
     }
 
 
@@ -111,6 +194,7 @@ public class SocketClient extends Socket {
     boolean  flag = true;
 
     public void sendMessage(String message){
+        LogUtil.d(message);
         try {
             String mess=addThingToMessage(message);
             dos.writeUTF(mess);
@@ -188,6 +272,7 @@ public class SocketClient extends Socket {
 
     public void stopSend(){
         flag=false;
+        stopFlag=false;
     }
 
     /**
